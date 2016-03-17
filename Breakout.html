@@ -12,36 +12,88 @@
 <script> 
 
 
-var ballX=75; //Start of ball on x-axis, movement of ball in x-direction
-var ballY=75; //Start of ball on y-axis, movement of ball in Y-direction
+var ballX=paddleX; //Start of ball on x-axis, movement of ball in x-direction
+var ballY=paddleX; //Start of ball on y-axis, movement of ball in Y-direction
 /*!!!!Bug had to do with ball speed being the samae!!!*/
 var ballSpeedX= 7; //Movement increase of ball 
 var ballSpeedY= 9;		 
 
-var Stage= function(brickCols, brickRow, brickWidth, brickHeight){
+/**
+ * Constructor
+ *
+ * @param brickCols The number of brick columns for this Level
+ * @param brickRow The number of brick rows for this level
+ * @param brickWidth The widht of each brick
+ * @param brickHeight The height of each brick
+ * @param generator A function that will generate the actual level
+ */
+var Level= function(brickCols, brickRow, brickWidth, brickHeight, generator){
 	this.brickCols = brickCols; 
 	this.brickRow = brickRow;
-	brickGap = 2;  
+	this.brickGap = 2;  
 	this.brickWidth = brickWidth; 
 	this.brickHeight = brickHeight; 
+	this.generate = generator;
 }
-var stageOne= new Stage(); 
 
-var brickWidth = 80; 
-var  brickHeight= 40; 
+
+/*
+*The following function - brickSet makes sure that all bricks in brickGrid are made true
+*/
+function fullGenerator(){
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false
+	}
+	brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		brickGrid[i]=true;
+		brickCounter++;
+	}
+}
+
+function randomBrickGenerator(){
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.5){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}
+	 }
+}
+
+// var Levels=[levelOne, levelTwo, levelThree, levelFour]; 
+var Levels=[ new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/10, /*generator=*/fullGenerator)
+	       , new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/10, /*generator=*/randomBrickGenerator)
+	       , new Level(/*brickCols=*/20, /*brickRow=*/7, /*brickWidth=*/40, /*brickHeight=*/10, /*generator=*/randomBrickGenerator)
+	       , new Level(/*brickCols=*/20, /*brickRow=*/14, /*brickWidth=*/40, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
+	       , new Level(/*brickCols=*/40, /*brickRow=*/14, /*brickWidth=*/20, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
+	
+	];
+
+
+
+var brickWidth = 40; 
+var  brickHeight= 10; 
 //Purpose of the brickGap is so we can differentiate bricks from one another.
 //Without the gap they would be flush against each other. 
 const brickGap=2; 
 
-var brickCols= 10; 
-var  brickRow=7; 
+var brickCols= 20; 
+var  brickRow=10; 
 //Array that controls the grid of Bricks
 var brickGrid= new Array(brickCols*brickRow);
 var brickCounter= 0; 
 var currentLevel= 0; 
 var gameOn= false; 
+var gameOnCounter= 0; 
 
-var lives = 5; 
+var lives = 0; 
 
 const paddleWidth= 100; 
 const paddleHeight=10;
@@ -52,10 +104,14 @@ var canvas, canvasContext;
 
 var mouseX = 0; //Making mouse coordinates global to be used in various functions
 var mouseY = 0;
+var mouseCheat=true; 
 
 
 
-var Levels=[levelOne, levelTwo, levelThree, levelFour]; 
+function setupGrid(){
+	brickGrid= new Array(brickCols*brickRow);
+}
+
 
 function updateMousePos(mouseEvnt){
 	if (!gameOn){
@@ -71,10 +127,12 @@ function updateMousePos(mouseEvnt){
 	paddleX = mouseX - paddleWidth/2; //Puts the mouse control at the middle of paddle
 
 	//Mouse cheat for testing purposes
-	// ballX= mouseX; 
-	// ballY= mouseY; 
-	// ballSpeedX= 0;
-	// ballSpeedY= -5; 
+	if (mouseCheat){
+		ballX= mouseX; 
+		ballY= mouseY;
+		ballSpeedX= 0;
+		ballSpeedY= -5;
+	}
 }
 
 ///This resets the game to the first level, and resets the lives
@@ -98,14 +156,28 @@ function brickReset(){
 		return;//early return
 	}
 
+
 	///valid and theerfore do stuff
 
-	//retrieve the level setup function from the levels array
-	var levelSetupFunc = Levels[currentLevel];
+	//retrieve the level setup object from the levels array
+	var level = Levels[currentLevel];
+
+
+	//set the global variables to match this levels variables
+	brickCols = level.brickCols;
+	brickRow = level.brickRow;
+	brickWidth = level.brickWidth;
+	brickHeight = level.brickHeight;
+	brickGap = level.brickGap;
+
+	//after changing the grid properties, we have to reset the grid array(s)
+	setupGrid();
+
+
 
 	//this is one of the functions levelTwo, or levelThree or levelFour
 	// so we call it to effect the actual leveling up or level setup
-	levelSetupFunc();
+	level.generate();
 
 
 }
@@ -226,12 +298,32 @@ function levelUp(){
 }
 
 
-function startGame(){
-	if (!gameOn){
-		alert("Welcome to 'The Yellow Brick Road'." + "\n\nPlease Read The Directions Below and Enjoy!!!")		 
-		gameOn= true; 
+function resumeGame(){
+
+
+
+	console.log('lives:',lives);
+
+	if (!gameOn && lives == 0){
+		///nothing to resume, therefore (re)start the game
+
+
+
+		if (gameOnCounter==0){
+		alert("Welcome to 'The Yellow Brick Road'." + "\n\nPlease Read The Directions Below and Enjoy!!!");
+		}	 
+		gameOn= true;
+		gameOnCounter++;
 		gameReset(); 
+	} else if (!gameOn && lives > 0) {
+		///this could happen for example if the game was paused, for example
+		/// after losing a life
+
+		gameOn= true;
+
+
 	}
+	console.log('lives:',lives);
 }
 
 window.onload=function(){
@@ -243,7 +335,7 @@ window.onload=function(){
 	setInterval(updateAll, 1000/framesPerSecond); 
 
 	canvas.addEventListener("mousemove", updateMousePos); 
-	canvas.addEventListener("click", startGame); 
+	canvas.addEventListener("click", resumeGame); 
 	
 	brickReset(); 
 	ballReset (); 
@@ -258,8 +350,13 @@ function updateAll(){
 
 //Function to reset ball when it misses its mark
 function ballReset(){
-	ballX= canvas.width/2; 
-	ballY=canvas.height/2; 
+	//ballX= canvas.width/2; 
+	//ballY=canvas.height/2;
+	gameOn= false;
+	ballX=paddleX+paddleWidth/2; 
+	ballY=canvas.height-paddleDistanceFromEdge-paddleHeight;
+	//drawRect(paddleX,canvas.height-paddleDistanceFromEdge , paddleWidth, paddleHeight, "black"); 
+
 }
 
 /*
@@ -286,13 +383,15 @@ function ballMove(){
 		ballSpeedY *= -1; 
 	} 	
 
-	if(ballY > canvas.height){ //bottom of canvas
+	if(ballY > canvas.height){//bottom of canvas
+		//gameOn=false; 
+		
 		ballReset();
 		lives--;
 		displayLives();
-			if (lives==1){
-				alert ("You have one more life left! Good luck.")
-			}
+		if (lives==1){
+			alert ("You have one more life left! Good luck.")
+		}
 
 		if (lives==0){
 			 if (confirm("Game Over! Would you like to restart?")){
