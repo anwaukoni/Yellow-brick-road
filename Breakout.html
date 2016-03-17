@@ -14,10 +14,18 @@
 
 var ballX=75; //Start of ball on x-axis, movement of ball in x-direction
 var ballY=75; //Start of ball on y-axis, movement of ball in Y-direction
+/*!!!!Bug had to do with ball speed being the samae!!!*/
 var ballSpeedX= 7; //Movement increase of ball 
 var ballSpeedY= 9;		 
 
-/*!!!!Bug had to do with ball speed being the samae!!!*/
+var Stage= function(brickCols, brickRow, brickWidth, brickHeight){
+	this.brickCols = brickCols; 
+	this.brickRow = brickRow;
+	brickGap = 2;  
+	this.brickWidth = brickWidth; 
+	this.brickHeight = brickHeight; 
+}
+var stageOne= new Stage(); 
 
 var brickWidth = 80; 
 var  brickHeight= 40; 
@@ -475,6 +483,9 @@ function drawAll(){
 	
 	drawBrick();
 
+	/*
+	* Hack for seeing dimensions of coordinates of mouse  on canvas
+	*/
 	// var mouseBrickCol = Math.floor(mouseX / brickWidth);//Used to make coordinates of mouse match division of bricks in x-direction
 	// var mouseBrickRow = Math.floor(mouseY / brickHeight); //Used to make coordinates of mouse match division of bricks in y-direction
 	// var bricksIndexUnderMouse= rowColToArrayIndex(mouseBrickCol, mouseBrickRow); 
