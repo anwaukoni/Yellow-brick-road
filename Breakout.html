@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+	<meta content= "text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+<head>
+
+</head>
+<body>
+	<h1 id="gameLives">Lives : 5</h1>
+	<canvas id="gameCanvas" width="800" height="600"></canvas>
+	<h3>---Start Game by Clicking---<br>---Control The Pad By Moving Mouse---<br>---Keep Track of Your Lives---</h3>
+<script> 
+
+
+var ballX=75; //Start of ball on x-axis, movement of ball in x-direction
+var ballY=75; //Start of ball on y-axis, movement of ball in Y-direction
+var ballSpeedX= 7; //Movement increase of ball 
+var ballSpeedY= 9;		 
+
+/*!!!!Bug had to do with ball speed being the samae!!!*/
+
+var brickWidth = 80; 
+var  brickHeight= 40; 
+//Purpose of the brickGap is so we can differentiate bricks from one another.
+//Without the gap they would be flush against each other. 
+const brickGap=2; 
+
+var brickCols= 10; 
+var  brickRow=7; 
+//Array that controls the grid of Bricks
+var brickGrid= new Array(brickCols*brickRow);
+var brickCounter= 0; 
+var currentLevel= 0; 
+var gameOn= false; 
+
+var lives = 5; 
+
+const paddleWidth= 100; 
+const paddleHeight=10;
+var paddleDistanceFromEdge=40; 
+var paddleX= 400; 
+
+var canvas, canvasContext; 
+
+var mouseX = 0; //Making mouse coordinates global to be used in various functions
+var mouseY = 0;
+
+
+
+var Levels=[levelOne, levelTwo, levelThree, levelFour]; 
+
+function updateMousePos(mouseEvnt){
+	if (!gameOn){
+		return; 
+	}
+	var rect = canvas.getBoundingClientRect(); 
+	var root = document.documentElement;
+
+	mouseX = mouseEvnt.clientX - rect.left - root.scrollLeft; 
+	mouseY = mouseEvnt.clientY - rect.top - root.scrollTop; 
+
+
+	paddleX = mouseX - paddleWidth/2; //Puts the mouse control at the middle of paddle
+
+	//Mouse cheat for testing purposes
+	ballX= mouseX; 
+	ballY= mouseY; 
+	ballSpeedX= 4;
+	ballSpeedY= -4; 
+}
+
+///This resets the game to the first level, and resets the lives
+function gameReset(){
+
+	//alert ("Game has started again!"); 
+	currentLevel = 0; 
+	lives = 5; 
+	brickReset(); 
+	displayLives();
+	gameOn = true;
+
+}
+
+///This resets the board according to whatever currentLevel is
+function brickReset(){
+
+
+	if (!(currentLevel < Levels.length))
+	{
+		return;//early return
+	}
+
+	///valid and theerfore do stuff
+
+	//retrieve the level setup function from the levels array
+	var levelSetupFunc = Levels[currentLevel];
+
+	//this is one of the functions levelTwo, or levelThree or levelFour
+	// so we call it to effect the actual leveling up or level setup
+	levelSetupFunc();
+
+
+}
+
+///this takes the variable `lives` and dumps it into the HTML
+function displayLives(){
+
+	var gameLives= document.getElementById('gameLives');
+	gameLives.innerText= "Lives : "+ lives;
+}
+
+/*
+*The following function - brickSet makes sure that all bricks in brickGrid are made true
+*/
+function levelOne(){
+				
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false
+	}
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		brickGrid[i]=true;
+		brickCounter++; 
+		// if(Math.random()<0.5){
+		// 	brickGrid[i]=true; 
+		// }else{
+		// 	brickGrid[i]=false; 
+		// }//end of if/else statement
+	 }	//end of for loop
+	 //alert("WELCOME TO LEVEL ONE!"); 
+}//end of brickReset function
+
+function levelTwo(){
+
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.75){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}
+	 }	//end of for loop
+}
+
+function levelThree(){
+
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.5){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}//else{
+			//brickGrid[i]=false; 
+		//}//end of if/else statement
+		
+		//if (brickGrid[i]=true){
+			
+		//}
+	 }	//end of for loop
+}
+
+function levelFour(){
+
+		var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.5){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}//else{
+			//brickGrid[i]=false; 
+		//}//end of if/else statement
+		
+		//if (brickGrid[i]=true){
+			
+		//}
+	 }	//end of for loop
+}
+
+
+function hasAnotherLevel()
+{
+	//check if the NEXT index is valid, i.e within the range of the Levels array
+	var nextLevelIndex = currentLevel + 1;
+	return (nextLevelIndex < Levels.length);
+}
+
+function levelUp(){
+
+	//we want to retreive the level-up function for the current level,
+	//which is indexed within the Levels array.
+	if (!hasAnotherLevel())
+	{
+		console.log('no level to up to');
+		return;
+	}
+
+	//increment the current level
+	currentLevel++;
+
+	alert("Congratulations! You made it to Level: " + (1+currentLevel) + "\n\nGood Luck!!!" );
+
+	brickReset();
+}
+
+
+function startGame(){
+	if (!gameOn){
+		alert("Welcome to 'The Yellow Brick Road'." + "\n\nPlease Read The Directions Below and Enjoy!!!")		 
+		gameOn= true; 
+		gameReset(); 
+	}
+}
+
+window.onload=function(){
+
+	canvas=document.getElementById('gameCanvas'); 
+	canvasContext=canvas.getContext('2d'); 
+
+	var framesPerSecond=30; 
+	setInterval(updateAll, 1000/framesPerSecond); 
+
+	canvas.addEventListener("mousemove", updateMousePos); 
+	canvas.addEventListener("click", startGame); 
+	
+	brickReset(); 
+	ballReset (); 
+
+}; 
+
+function updateAll(){
+	moveAll(); 
+	drawAll(); 
+
+}
+
+//Function to reset ball when it misses its mark
+function ballReset(){
+	ballX= canvas.width/2; 
+	ballY=canvas.height/2; 
+}
+
+/*
+* Function that handles movement of ball
+*/
+function ballMove(){
+
+	if (!gameOn){
+		return; 
+	}
+	ballX += ballSpeedX;
+	ballY += ballSpeedY;
+
+
+	if (ballX < 0 && ballSpeedX < 0.0){	//left-hand side of canvas
+		ballSpeedX *= -1; 
+	} 
+
+	if(ballX > canvas.width && ballSpeedX > 0.0 ){ //right-hand side of canvas
+		ballSpeedX *= -1;
+	}
+
+	if (ballY < 0 && ballSpeedY < 0.0){//top of canvas	
+		ballSpeedY *= -1; 
+	} 	
+
+	if(ballY > canvas.height){ //bottom of canvas
+		ballReset();
+		lives--;
+		displayLives();
+			if (lives==1){
+				alert ("You have one more life left! Good luck.")
+			}
+
+		if (lives==0){
+			 if (confirm("Game Over! Would you like to restart?")){
+			 	gameReset(); 
+			 }else{
+			 	gameOn=false; 
+			 }
+		}
+	}
+
+}
+
+function isBrickAtColRow(col,row){
+	if(col >= 0 && col < brickCols &&
+	   row >= 0 && row < brickRow){
+
+		var brickIndexUnderGrid= rowColToArrayIndex(col, row); 
+		return brickGrid[brickIndexUnderGrid];  
+
+	}else{
+		return false; 
+	}
+}
+
+/*
+* 	Function that handles collision between bricks and ball
+*/
+
+function ballBrickHandling(){
+	var ballBrickCol = Math.floor(ballX / brickWidth);//Used to make coordinates of mouse match division of bricks in x-direction
+	var ballBrickRow = Math.floor(ballY / brickHeight); //Used to make coordinates of mouse match division of bricks in y-direction
+	var bricksIndexUnderBall= rowColToArrayIndex(ballBrickCol, ballBrickRow); 
+
+	if(ballBrickCol >= 0 && ballBrickCol < brickCols &&
+	   ballBrickRow >= 0 && ballBrickRow < brickRow){ //Check if the ball is over a valid brick coordinate;
+		
+		if(isBrickAtColRow(ballBrickCol, ballBrickRow)){ //Secondary check to see if an actual brick exists there
+			brickGrid[bricksIndexUnderBall]=false; 
+			
+			brickCounter--; 
+						
+			console.log(brickCounter);
+			 
+
+			var previousBallX = ballX - ballSpeedX; //Check the previous speed of ball X-direction one frame before
+			var previousBallY = ballY - ballSpeedY; 
+			var prevBrickCol = Math.floor(previousBallX / brickWidth); 
+			var prevBrickRow = Math.floor(previousBallY/ brickHeight);
+
+			var whereBothTestsFail= true; 
+			if (prevBrickCol != ballBrickCol){ //Check if there is a column change after the ball hits a brick
+
+				//var adjBrickSide = rowColToArrayIndex (prevBrickCol, ballBrickRow); 
+				if (isBrickAtColRow(prevBrickCol, ballBrickRow)== false){
+					ballSpeedX *= -1; 
+					whereBothTestsFail= false; 
+				}
+				
+			}
+			if (prevBrickRow != ballBrickRow){ //Check if there is a row change after  ball hits brick
+
+				//var adjBrickTop = rowColToArrayIndex (ballBrickCol, prevBrickRow); 
+				if (isBrickAtColRow(ballBrickCol, prevBrickRow)== false){
+					ballSpeedY *= -1;
+					whereBothTestsFail= false; 
+				} 
+				
+			}
+
+			if (whereBothTestsFail){ //Accounts for "armpit" case whereby bricks are both adjacent and bottom of target brick
+				ballSpeedX *= -1; 
+				ballSpeedY *= -1; 
+			}
+
+		
+		}
+	}
+
+}
+
+/*
+* 	Function that handles collision between paddle and ball
+*/
+function paddleBallHanding(){
+	var paddleTopEdge  = canvas.height - paddleDistanceFromEdge;
+	var paddleBottomEdge = paddleTopEdge + paddleHeight;
+	var paddleLeftEdge = paddleX; 
+	var paddleRightEdge = paddleX + paddleWidth;
+	if (ballY > paddleTopEdge && //Top Edge of paddle
+		ballY < paddleBottomEdge &&  //Bottom Edge of paddle
+		ballX > paddleLeftEdge && //Left Edge of paddle	
+		ballX < paddleRightEdge) { //Right Edge of paddle
+		
+		ballSpeedY *= -1; 
+
+		var centerOfPaddle = paddleX+paddleWidth/2;
+		var ballDistFromPaddleCenter=  ballX - centerOfPaddle; 
+		ballSpeedX=ballDistFromPaddleCenter * 0.35; 
+
+
+		if (brickCounter == 0 && hasAnotherLevel()){
+
+			levelUp();
+			gameOn = true;			
+			console.log(hasAnotherLevel()); 					
+		}
+
+		if (gameOn && brickCounter == 0 && !hasAnotherLevel()){
+
+			gameOn = false;
+			if (confirm("Congratulations! You beat the game!!! WOOP! WOOP!\n\nWould You Like to Play Again?")){
+				startGame(); 
+			}else {
+				return; 
+			}; 
+			
+
+		}
+	} 
+}
+
+/*
+*This section contains the movement of the ball. 
+*Plus how the movement is affect when it reaches 
+*the beginning/end of the canvas. 
+*/
+function moveAll(){
+
+	ballMove(); 
+	
+	ballBrickHandling(); 
+
+	paddleBallHanding(); 
+
+}
+
+
+//This function is used to target specific blocks in the brick set
+function rowColToArrayIndex(col,row){
+	return brickCols * row + col
+}
+
+/*
+*The following fuction controls the drawing of bricks if the bricks is true--based on brickReset function 
+*It is a nested to control the drawing of rows and columns. 
+*/
+function drawBrick(){
+	for (var eachRow=0; eachRow<brickRow; eachRow++){
+		for(var eachCol=0; eachCol<brickCols; eachCol++){
+			var arrayIndex= rowColToArrayIndex(eachCol, eachRow); 
+			if (brickGrid[arrayIndex]){
+				drawRect(brickWidth*[eachCol],brickHeight*[eachRow],brickWidth-brickGap,brickHeight-brickGap, "yellow");
+			}//end of if statement
+		 }//end of 2nd for-loop
+	}//end of 1st for loop
+}//end of drawBrick function
+
+//Function that handles the drawing of rectangles
+function drawRect(topLeftX, topLeftY, boxWidth, boxHeight, fillColor){
+	canvasContext.fillStyle=fillColor; 
+	canvasContext.fillRect(topLeftX,topLeftY, boxWidth,boxHeight); 
+} 
+
+//Function that handles the drawing of circles
+function drawCircle(centerX, centerY, Radius, fillColor){
+	canvasContext.fillStyle= fillColor; 
+	canvasContext.beginPath(); 
+	canvasContext.arc(centerX,centerY ,10 ,0,Math.PI*2,true); 
+	canvasContext.fill(); 
+}
+
+//Function that handles the drawing of mouse coordinates on the canvas
+function colorText(showWords, CornerX, CornerY, fillColor){
+	canvasContext.fillStyle=fillColor; 
+	canvasContext.fillText(showWords, CornerX, CornerY);
+}
+
+
+//All instances of drawing functions that have been created below this function
+function drawAll(){
+
+	drawRect(0,0, canvas.width, canvas.height,"red"); //Large Game Canvas 
+	
+	
+	drawCircle(ballX,ballY, 10, "blue"); //Ball
+
+	drawRect(paddleX,canvas.height-paddleDistanceFromEdge , paddleWidth, paddleHeight, "black"); //Main user paddle
+	
+	drawBrick();
+
+	// var mouseBrickCol = Math.floor(mouseX / brickWidth);//Used to make coordinates of mouse match division of bricks in x-direction
+	// var mouseBrickRow = Math.floor(mouseY / brickHeight); //Used to make coordinates of mouse match division of bricks in y-direction
+	// var bricksIndexUnderMouse= rowColToArrayIndex(mouseBrickCol, mouseBrickRow); 
+	// colorText("("+ mouseBrickCol + "," + mouseBrickRow + "): "+bricksIndexUnderMouse, mouseX,mouseY, "black"); //Mouse coordinates
+	
+	
+}
+
+</script>
+
+</body>
+</html>
