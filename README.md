@@ -8,3 +8,5 @@
 
 * Keep track of your lives
 
+## I would still like to do the following: 
+- [ ] Add feature to increase the difficulty of stages
