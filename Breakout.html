@@ -68,11 +68,11 @@ function randomBrickGenerator(){
 }
 
 // var Levels=[levelOne, levelTwo, levelThree, levelFour]; 
-var Levels=[ new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/10, /*generator=*/fullGenerator)
-	       , new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/10, /*generator=*/randomBrickGenerator)
-	       , new Level(/*brickCols=*/20, /*brickRow=*/7, /*brickWidth=*/40, /*brickHeight=*/10, /*generator=*/randomBrickGenerator)
-	       , new Level(/*brickCols=*/20, /*brickRow=*/14, /*brickWidth=*/40, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
-	       , new Level(/*brickCols=*/40, /*brickRow=*/14, /*brickWidth=*/20, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
+var Levels=[ new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/40, /*generator=*/fullGenerator)
+	       , new Level(/*brickCols=*/10, /*brickRow=*/10, /*brickWidth=*/80, /*brickHeight=*/30, /*generator=*/randomBrickGenerator)
+	       , new Level(/*brickCols=*/13, /*brickRow=*/15, /*brickWidth=*/60, /*brickHeight=*/20, /*generator=*/randomBrickGenerator)
+	       //, new Level(/*brickCols=*/20, /*brickRow=*/14, /*brickWidth=*/40, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
+	       //, new Level(/*brickCols=*/40, /*brickRow=*/14, /*brickWidth=*/20, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
 	
 	];
 
@@ -89,7 +89,7 @@ var  brickRow=10;
 //Array that controls the grid of Bricks
 var brickGrid= new Array(brickCols*brickRow);
 var brickCounter= 0; 
-var currentLevel= 0; 
+var currentLevel= 2; 
 var gameOn= false; 
 var gameOnCounter= 0; 
 
@@ -139,7 +139,7 @@ function updateMousePos(mouseEvnt){
 function gameReset(){
 
 	//alert ("Game has started again!"); 
-	currentLevel = 0; 
+	currentLevel = 2; 
 	lives = 5; 
 	brickReset(); 
 	displayLives();
@@ -189,87 +189,7 @@ function displayLives(){
 	gameLives.innerText= "Lives : "+ lives;
 }
 
-/*
-*The following function - brickSet makes sure that all bricks in brickGrid are made true
-*/
-function levelOne(){
-				
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false
-	}
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		brickGrid[i]=true;
-		brickCounter++; 
-		// if(Math.random()<0.5){
-		// 	brickGrid[i]=true; 
-		// }else{
-		// 	brickGrid[i]=false; 
-		// }//end of if/else statement
-	 }	//end of for loop
-	 //alert("WELCOME TO LEVEL ONE!"); 
-}//end of brickReset function
 
-function levelTwo(){
-
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.75){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}
-	 }	//end of for loop
-}
-
-function levelThree(){
-
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.5){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}//else{
-			//brickGrid[i]=false; 
-		//}//end of if/else statement
-		
-		//if (brickGrid[i]=true){
-			
-		//}
-	 }	//end of for loop
-}
-
-function levelFour(){
-
-		var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.5){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}//else{
-			//brickGrid[i]=false; 
-		//}//end of if/else statement
-		
-		//if (brickGrid[i]=true){
-			
-		//}
-	 }	//end of for loop
-}
 
 
 function hasAnotherLevel()
@@ -302,7 +222,6 @@ function resumeGame(){
 
 
 
-	console.log('lives:',lives);
 
 	if (!gameOn && lives == 0){
 		///nothing to resume, therefore (re)start the game
@@ -323,7 +242,6 @@ function resumeGame(){
 
 
 	}
-	console.log('lives:',lives);
 }
 
 window.onload=function(){
@@ -350,12 +268,11 @@ function updateAll(){
 
 //Function to reset ball when it misses its mark
 function ballReset(){
-	//ballX= canvas.width/2; 
-	//ballY=canvas.height/2;
+
 	gameOn= false;
+	//paddleX=canva Start paddle in the middle 
 	ballX=paddleX+paddleWidth/2; 
 	ballY=canvas.height-paddleDistanceFromEdge-paddleHeight;
-	//drawRect(paddleX,canvas.height-paddleDistanceFromEdge , paddleWidth, paddleHeight, "black"); 
 
 }
 
@@ -597,3 +514,85 @@ function drawAll(){
 
 </body>
 </html>
+
+<!-- /*
+*The following function - brickSet makes sure that all bricks in brickGrid are made true
+*/
+function levelOne(){
+				
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false
+	}
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		brickGrid[i]=true;
+		brickCounter++; 
+		// if(Math.random()<0.5){
+		// 	brickGrid[i]=true; 
+		// }else{
+		// 	brickGrid[i]=false; 
+		// }//end of if/else statement
+	 }	//end of for loop
+	 //alert("WELCOME TO LEVEL ONE!"); 
+}//end of brickReset function
+
+function levelTwo(){
+
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.75){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}
+	 }	//end of for loop
+}
+
+function levelThree(){
+
+	var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.5){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}//else{
+			//brickGrid[i]=false; 
+		//}//end of if/else statement
+		
+		//if (brickGrid[i]=true){
+			
+		//}
+	 }	//end of for loop
+}
+
+function levelFour(){
+
+		var i; 
+	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
+		brickGrid[i]=false;
+	}
+
+	 brickCounter= 0; 
+	for(; i<brickCols*brickRow; i++){
+		if(Math.random()<0.5){
+			brickGrid[i]=true;
+	 		brickCounter++; 
+		}//else{
+			//brickGrid[i]=false; 
+		//}//end of if/else statement
+		
+		//if (brickGrid[i]=true){
+			
+		//}
+	 }	//end of for loop
+} -->
