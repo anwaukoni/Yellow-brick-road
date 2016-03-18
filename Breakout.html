@@ -12,11 +12,61 @@
 <script> 
 
 
+
+var  brickWidth = 40; 
+var  brickHeight= 10; 
+//Purpose of the brickGap is so we can differentiate bricks from one another.
+//Without the gap they would be flush against each other. 
+const brickGap=2; 
+
+var brickCols= 20; 
+var  brickRow=10; 
+//Array that controls the grid of Bricks
+var brickGrid= new Array(brickCols*brickRow);
+var brickCounter= 0; 
+var currentLevel= 0; 
+var gameOn= false; 
+var gameOnCounter= 0; 
+
+var lives = 0; 
+
+const paddleWidth= 100; 
+const paddleHeight=10;
+var paddleDistanceFromEdge=40; 
+var paddleX= 400; 
+
 var ballX=paddleX; //Start of ball on x-axis, movement of ball in x-direction
 var ballY=paddleX; //Start of ball on y-axis, movement of ball in Y-direction
-/*!!!!Bug had to do with ball speed being the samae!!!*/
 var ballSpeedX= 7; //Movement increase of ball 
 var ballSpeedY= 9;		 
+
+var canvas, canvasContext; 
+
+var mouseX = 0; //Making mouse coordinates global to be used in various functions
+var mouseY = 0;
+var mouseCheat=false;
+
+window.onload=function(){
+
+	canvas=document.getElementById('gameCanvas'); 
+	canvasContext=canvas.getContext('2d'); 
+
+	var framesPerSecond=30; 
+	setInterval(updateAll, 1000/framesPerSecond); 
+
+	canvas.addEventListener("mousemove", updateMousePos); 
+	canvas.addEventListener("click", resumeGame); 
+	
+	brickReset(); 
+	ballReset (); 
+
+}; 
+
+function updateAll(){
+	moveAll(); 
+	drawAll(); 
+
+} 
 
 /**
  * Constructor
@@ -71,41 +121,7 @@ function randomBrickGenerator(){
 var Levels=[ new Level(/*brickCols=*/10, /*brickRow=*/7, /*brickWidth=*/80, /*brickHeight=*/40, /*generator=*/fullGenerator)
 	       , new Level(/*brickCols=*/10, /*brickRow=*/10, /*brickWidth=*/80, /*brickHeight=*/30, /*generator=*/randomBrickGenerator)
 	       , new Level(/*brickCols=*/13, /*brickRow=*/15, /*brickWidth=*/60, /*brickHeight=*/20, /*generator=*/randomBrickGenerator)
-	       //, new Level(/*brickCols=*/20, /*brickRow=*/14, /*brickWidth=*/40, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
-	       //, new Level(/*brickCols=*/40, /*brickRow=*/14, /*brickWidth=*/20, /*brickHeight=*/5, /*generator=*/randomBrickGenerator)
-	
-	];
-
-
-
-var brickWidth = 40; 
-var  brickHeight= 10; 
-//Purpose of the brickGap is so we can differentiate bricks from one another.
-//Without the gap they would be flush against each other. 
-const brickGap=2; 
-
-var brickCols= 20; 
-var  brickRow=10; 
-//Array that controls the grid of Bricks
-var brickGrid= new Array(brickCols*brickRow);
-var brickCounter= 0; 
-var currentLevel= 0; 
-var gameOn= false; 
-var gameOnCounter= 0; 
-
-var lives = 0; 
-
-const paddleWidth= 100; 
-const paddleHeight=10;
-var paddleDistanceFromEdge=40; 
-var paddleX= 400; 
-
-var canvas, canvasContext; 
-
-var mouseX = 0; //Making mouse coordinates global to be used in various functions
-var mouseY = 0;
-var mouseCheat=false; 
-
+			];
 
 
 function setupGrid(){
@@ -150,14 +166,10 @@ function gameReset(){
 ///This resets the board according to whatever currentLevel is
 function brickReset(){
 
-
 	if (!(currentLevel < Levels.length))
 	{
 		return;//early return
 	}
-
-
-	///valid and theerfore do stuff
 
 	//retrieve the level setup object from the levels array
 	var level = Levels[currentLevel];
@@ -173,12 +185,9 @@ function brickReset(){
 	//after changing the grid properties, we have to reset the grid array(s)
 	setupGrid();
 
-
-
 	//this is one of the functions levelTwo, or levelThree or levelFour
 	// so we call it to effect the actual leveling up or level setup
 	level.generate();
-
 
 }
 
@@ -220,9 +229,6 @@ function levelUp(){
 
 function resumeGame(){
 
-
-
-
 	if (!gameOn && lives == 0){
 		///nothing to resume, therefore (re)start the game
 
@@ -244,27 +250,6 @@ function resumeGame(){
 	}
 }
 
-window.onload=function(){
-
-	canvas=document.getElementById('gameCanvas'); 
-	canvasContext=canvas.getContext('2d'); 
-
-	var framesPerSecond=30; 
-	setInterval(updateAll, 1000/framesPerSecond); 
-
-	canvas.addEventListener("mousemove", updateMousePos); 
-	canvas.addEventListener("click", resumeGame); 
-	
-	brickReset(); 
-	ballReset (); 
-
-}; 
-
-function updateAll(){
-	moveAll(); 
-	drawAll(); 
-
-}
 
 //Function to reset ball when it misses its mark
 function ballReset(){
@@ -275,7 +260,7 @@ function ballReset(){
 	paddleX= canvas.width/2; 	
 	//ballY=canvas.height/2;
 
-	
+	//Start ball in middle of paddle
 	ballX=paddleX+paddleWidth/2; 
 	ballY=canvas.height-paddleDistanceFromEdge-paddleHeight;
 
@@ -341,7 +326,6 @@ function isBrickAtColRow(col,row){
 /*
 * 	Function that handles collision between bricks and ball
 */
-
 function ballBrickHandling(){
 	var ballBrickCol = Math.floor(ballX / brickWidth);//Used to make coordinates of mouse match division of bricks in x-direction
 	var ballBrickRow = Math.floor(ballY / brickHeight); //Used to make coordinates of mouse match division of bricks in y-direction
@@ -519,85 +503,3 @@ function drawAll(){
 
 </body>
 </html>
-
-<!-- /*
-*The following function - brickSet makes sure that all bricks in brickGrid are made true
-*/
-function levelOne(){
-				
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false
-	}
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		brickGrid[i]=true;
-		brickCounter++; 
-		// if(Math.random()<0.5){
-		// 	brickGrid[i]=true; 
-		// }else{
-		// 	brickGrid[i]=false; 
-		// }//end of if/else statement
-	 }	//end of for loop
-	 //alert("WELCOME TO LEVEL ONE!"); 
-}//end of brickReset function
-
-function levelTwo(){
-
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.75){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}
-	 }	//end of for loop
-}
-
-function levelThree(){
-
-	var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.5){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}//else{
-			//brickGrid[i]=false; 
-		//}//end of if/else statement
-		
-		//if (brickGrid[i]=true){
-			
-		//}
-	 }	//end of for loop
-}
-
-function levelFour(){
-
-		var i; 
-	for (i=0; i< 2*brickCols; i++){ //Creation of gutter for improved gameplay
-		brickGrid[i]=false;
-	}
-
-	 brickCounter= 0; 
-	for(; i<brickCols*brickRow; i++){
-		if(Math.random()<0.5){
-			brickGrid[i]=true;
-	 		brickCounter++; 
-		}//else{
-			//brickGrid[i]=false; 
-		//}//end of if/else statement
-		
-		//if (brickGrid[i]=true){
-			
-		//}
-	 }	//end of for loop
-} -->
