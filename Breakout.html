@@ -89,7 +89,7 @@ var  brickRow=10;
 //Array that controls the grid of Bricks
 var brickGrid= new Array(brickCols*brickRow);
 var brickCounter= 0; 
-var currentLevel= 2; 
+var currentLevel= 0; 
 var gameOn= false; 
 var gameOnCounter= 0; 
 
@@ -104,7 +104,7 @@ var canvas, canvasContext;
 
 var mouseX = 0; //Making mouse coordinates global to be used in various functions
 var mouseY = 0;
-var mouseCheat=true; 
+var mouseCheat=false; 
 
 
 
@@ -139,7 +139,7 @@ function updateMousePos(mouseEvnt){
 function gameReset(){
 
 	//alert ("Game has started again!"); 
-	currentLevel = 2; 
+	currentLevel = 0; 
 	lives = 5; 
 	brickReset(); 
 	displayLives();
