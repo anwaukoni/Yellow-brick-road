@@ -270,7 +270,12 @@ function updateAll(){
 function ballReset(){
 
 	gameOn= false;
-	//paddleX=canva Start paddle in the middle 
+
+	// Start paddle in the middle 
+	paddleX= canvas.width/2; 	
+	//ballY=canvas.height/2;
+
+	
 	ballX=paddleX+paddleWidth/2; 
 	ballY=canvas.height-paddleDistanceFromEdge-paddleHeight;
 
