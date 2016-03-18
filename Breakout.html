@@ -154,7 +154,6 @@ function updateMousePos(mouseEvnt){
 ///This resets the game to the first level, and resets the lives
 function gameReset(){
 
-	//alert ("Game has started again!"); 
 	currentLevel = 0; 
 	lives = 5; 
 	brickReset(); 
@@ -232,8 +231,6 @@ function resumeGame(){
 	if (!gameOn && lives == 0){
 		///nothing to resume, therefore (re)start the game
 
-
-
 		if (gameOnCounter==0){
 		alert("Welcome to 'The Yellow Brick Road'." + "\n\nPlease Read The Directions Below and Enjoy!!!");
 		}	 
@@ -245,11 +242,8 @@ function resumeGame(){
 		/// after losing a life
 
 		gameOn= true;
-
-
 	}
 }
-
 
 //Function to reset ball when it misses its mark
 function ballReset(){
