@@ -9,4 +9,4 @@
 * Keep track of your lives
 
 ## I would still like to do the following: 
-- [x] Add feature to increase the difficulty of stages
+- ~~[x] Add feature to increase the difficulty of stages~~
